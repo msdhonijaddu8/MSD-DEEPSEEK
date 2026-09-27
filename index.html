@@ -6,6 +6,7 @@
 <meta name="referrer" content="no-referrer" />
 <title>M.S.D Cricket Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Orbitron:wght@700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/controls.min.css">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   :root {
@@ -36,7 +37,7 @@
     display: flex; flex-direction: column;
   }
 
-  /* ── BRAND HEADER ── */
+  /* BRAND */
   .brand-head { text-align: center; padding: 14px 0 6px; position: relative; }
   .brand-title {
     font-family: var(--brand); font-size: 32px; font-weight: 900;
@@ -63,7 +64,7 @@
     .brand-sub { font-size: 9px; letter-spacing: 3px; }
   }
 
-  /* ── AD SLOT ── */
+  /* AD */
   .ad-slot {
     margin: 12px auto; max-width: 860px; width: 100%; min-height: 60px;
     background: var(--card); border: 1px dashed var(--line-hot); border-radius: 12px;
@@ -76,7 +77,7 @@
     font-size: 9px; color: var(--txt-dark); opacity: 0.6;
   }
 
-  /* ── CHANNEL HEAD ── */
+  /* CHANNEL */
   .channel-head { text-align: center; padding: 18px 0 14px; }
   .ch-live {
     display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
@@ -98,7 +99,7 @@
   }
   @media (max-width: 480px) { .ch-name { font-size: 15px; } }
 
-  /* ── PLAYER ── */
+  /* PLAYER */
   .player-section {
     flex: 1; display: flex; flex-direction: column;
     justify-content: center; align-items: center;
@@ -154,7 +155,7 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── CONTROLS ROW ── */
+  /* CONTROLS */
   .controls-row {
     margin-top: 14px; display: flex; gap: 10px; justify-content: center;
     flex-wrap: wrap; max-width: 860px; width: 100%;
@@ -175,7 +176,6 @@
     width: 16px; height: 16px; stroke: currentColor; fill: none;
     stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
   }
-  .ctrl-btn.active { border-color: var(--green); color: var(--green); }
 
   .quality-wrap {
     display: inline-flex; align-items: center; gap: 8px;
@@ -193,7 +193,7 @@
   }
   .quality-wrap select option { background: var(--card); color: var(--txt); }
 
-  /* ── TELEGRAM BAR ── */
+  /* TELEGRAM */
   .tg-bar {
     margin-top: 14px; display: flex; align-items: center; gap: 13px;
     padding: 13px 18px;
@@ -234,7 +234,7 @@
     stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
   }
 
-  /* ── CREDIT ── */
+  /* CREDIT */
   .credit-footer {
     margin-top: 30px; text-align: center;
     padding: 24px 16px 12px; position: relative;
@@ -264,7 +264,7 @@
     .credit-label { font-size: 9px; letter-spacing: 3px; }
   }
 
-  /* ── POPUP ── */
+  /* POPUP */
   .popup-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,.85);
     backdrop-filter: blur(6px); z-index: 100; display: none;
@@ -313,7 +313,7 @@
   }
   .popup-joined:hover { color: var(--txt); border-color: var(--txt-dim); }
 
-  /* ── FULLSCREEN ── */
+  /* FULLSCREEN */
   .player-shell:fullscreen,
   .player-shell:-webkit-full-screen {
     border-radius: 0; border: none; max-width: none;
@@ -324,7 +324,7 @@
     aspect-ratio: unset; height: 100%;
   }
 
-  /* ── ERROR ── */
+  /* ERROR */
   .error-screen {
     position: absolute; inset: 0; background: var(--card);
     display: flex; flex-direction: column; align-items: center;
@@ -335,7 +335,7 @@
   .error-screen .msg { font-size: 14px; font-weight: 700; color: var(--txt); }
   .error-screen .sub { font-size: 12px; color: var(--txt-dim); }
 
-  /* ── TOAST ── */
+  /* TOAST */
   .toast {
     position: fixed; bottom: 24px; left: 50%;
     transform: translateX(-50%) translateY(80px);
@@ -358,7 +358,6 @@
     <div class="brand-line"></div>
   </div>
 
-  <!-- TOP AD SLOT -->
   <div class="ad-slot" id="ad-top">[ AD SLOT · TOP BANNER ]</div>
 
   <div class="channel-head">
@@ -404,7 +403,6 @@
     </div>
   </div>
 
-  <!-- BOTTOM AD SLOT -->
   <div class="ad-slot" id="ad-bottom">[ AD SLOT · BOTTOM BANNER ]</div>
 
   <a class="tg-bar" id="tgBar" href="#" target="_blank" rel="noopener">
@@ -446,27 +444,21 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- ══════════════════════════════════════════════
-     PLAYER LIBRARIES
-     - hls.js   : m3u8 (HLS)
-     - shaka    : mpd (DASH) + DRM (Widevine, ClearKey)
-     ══════════════════════════════════════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/shaka-player.ui.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/controls.min.css">
 
 <script>
 /* ══════════════════════════════════════════════
-   CONFIG
+   CONFIG — sonujson-v3 auto-fetch (fresh every load)
    ══════════════════════════════════════════════ */
 const CONFIG = {
-  channelsJson: "channels.json",
+  channelsJson: "https://sonujson-v3.pages.dev/Data/sports.json",
   telegramUrl: "https://t.me/MSD_cricketlinks",
   popupDelayMs: 3000
 };
 
 /* ══════════════════════════════════════════════
-   MONETIZATION HOOKS
+   MONETIZATION HOOK
    ══════════════════════════════════════════════ */
 function firePopunder() {
   // YAHAN APNA POPUNDER CODE DAALO
@@ -491,7 +483,7 @@ let hls = null;
 let shakaPlayer = null;
 let currentChannel = null;
 
-/* ── FIT MODES ── */
+/* ── FIT ── */
 const FITS = ["contain", "fill", "cover"];
 let fitIdx = 0;
 function applyFit() {
@@ -505,6 +497,7 @@ fitBtn.addEventListener("click", () => {
   fitIdx = (fitIdx + 1) % FITS.length;
   applyFit();
 });
+video.classList.add("mode-contain");
 
 /* ── URL ID ── */
 function getIdFromUrl() {
@@ -512,14 +505,14 @@ function getIdFromUrl() {
   return params.get("") || params.get("id") || params.get("ch") || null;
 }
 
-/* ── LOAD JSON ── */
+/* ── LOAD JSON (cache-bust) ── */
 async function loadChannels() {
   try {
-    const res = await fetch(CONFIG.channelsJson + "?t=" + Date.now());
+    const res = await fetch(CONFIG.channelsJson + "?t=" + Date.now(), { cache: "no-store" });
     if (!res.ok) throw new Error("not found");
     return await res.json();
   } catch (e) {
-    showError("Channels file load nahi hui", "channels.json check karo");
+    showError("Channels file load nahi hui", "internet ya source check karo");
     return null;
   }
 }
@@ -531,11 +524,7 @@ function showError(msg, sub) {
   if (existing) existing.remove();
   const el = document.createElement("div");
   el.className = "error-screen";
-  el.innerHTML = `
-    <div class="icon">⚠️</div>
-    <div class="msg">${msg}</div>
-    <div class="sub">${sub || ""}</div>
-  `;
+  el.innerHTML = `<div class="icon">⚠️</div><div class="msg">${msg}</div><div class="sub">${sub || ""}</div>`;
   frame.appendChild(el);
   shield.classList.add("hide");
 }
@@ -551,7 +540,7 @@ function destroyPlayers() {
   qualitySelect.innerHTML = '<option value="-1">Auto</option>';
 }
 
-/* ── SHIELD CLICK ── */
+/* ── SHIELD ── */
 shield.addEventListener("click", () => {
   if (!currentChannel) return;
   firePopunder();
@@ -559,25 +548,16 @@ shield.addEventListener("click", () => {
   startPlayback(currentChannel);
 });
 
-/* ══════════════════════════════════════════════
-   UNIVERSAL PLAYER DISPATCH
-   ─────────────────────────────────────────────
-   Detect stream type and route:
-   - type: "iframe"  → iframe
-   - .mpd / mpd url  → shaka (DASH, optional DRM)
-   - .m3u8 / m3u     → hls.js
-   - everything else → iframe fallback
-   ══════════════════════════════════════════════ */
+/* ── DISPATCH ── */
 function startPlayback(ch) {
   destroyPlayers();
   loader.classList.add("on");
 
-  // Resolve type
   const explicit = (ch.type || "").toLowerCase();
-  const url = ch.url || "";
+  const url = ch.stream_url || ch.url || "";
   const lowerUrl = url.toLowerCase();
 
-  let mode = "iframe"; // fallback
+  let mode = "iframe";
   if (explicit === "iframe") mode = "iframe";
   else if (explicit === "mpd" || explicit === "dash" || explicit === "drm") mode = "shaka";
   else if (explicit === "hls" || explicit === "m3u8") mode = "hls";
@@ -592,14 +572,11 @@ function startPlayback(ch) {
   return startIframe(ch);
 }
 
-/* ══════════════════════════════════════════════
-   HLS PLAYER (m3u8)
-   ══════════════════════════════════════════════ */
+/* ── HLS ── */
 function startHls(ch) {
   video.style.display = "block";
   iframe.style.display = "none";
 
-  // cookie / header support
   const rawCookie = ch.cookie || "";
   const rawCookieVal = rawCookie.startsWith("__hdnea=") ? rawCookie.slice(9) : rawCookie;
   const withCookie = (u) => {
@@ -607,37 +584,26 @@ function startHls(ch) {
     if (u.indexOf("__hdnea__") !== -1) return u;
     return u + (u.indexOf("?") !== -1 ? "&" : "?") + "__hdnea=" + rawCookieVal;
   };
-
-  const finalUrl = withCookie(ch.url);
+  const finalUrl = withCookie(ch.stream_url || ch.url);
 
   if (Hls.isSupported()) {
     hls = new Hls({
-      enableWorker: true,
-      lowLatencyMode: true,
-      backBufferLength: 30,
-      maxBufferLength: 15,
-      manifestLoadingTimeOut: 12000,
-      manifestLoadingMaxRetry: 3,
-      levelLoadingTimeOut: 12000,
-      fragLoadingTimeOut: 20000,
+      enableWorker: true, lowLatencyMode: true,
+      backBufferLength: 30, maxBufferLength: 15,
+      manifestLoadingTimeOut: 12000, manifestLoadingMaxRetry: 3,
+      levelLoadingTimeOut: 12000, fragLoadingTimeOut: 20000,
       xhrSetup: (xhr) => {
         if (ch.cookie) xhr.setRequestHeader("Cookie", ch.cookie);
-        xhr.setRequestHeader("Referer", "https://www.jiotv.com/");
+        xhr.setRequestHeader("Referer", ch.referer || "https://www.jiotv.com/");
       }
     });
-
     hls.loadSource(finalUrl);
     hls.attachMedia(video);
 
     hls.on(Hls.Events.MANIFEST_PARSED, (e, data) => {
       loader.classList.remove("on");
       video.play().catch(() => {});
-
-      const levels = data.levels
-        .map((l, i) => ({ i, height: l.height }))
-        .filter(l => l.height)
-        .sort((a, b) => b.height - a.height);
-
+      const levels = data.levels.map((l, i) => ({ i, height: l.height })).filter(l => l.height).sort((a, b) => b.height - a.height);
       qualitySelect.innerHTML = '<option value="-1">Auto</option>';
       levels.forEach(l => {
         const opt = document.createElement("option");
@@ -677,9 +643,7 @@ function startHls(ch) {
   }
 }
 
-/* ══════════════════════════════════════════════
-   SHAKA PLAYER (mpd / DASH / DRM)
-   ══════════════════════════════════════════════ */
+/* ── SHAKA ── */
 async function startShaka(ch) {
   video.style.display = "block";
   iframe.style.display = "none";
@@ -700,58 +664,26 @@ async function startShaka(ch) {
   shakaPlayer = new shaka.Player();
   await shakaPlayer.attach(video);
 
-  // quality selector setup
-  shakaPlayer.addEventListener("adaptation", () => {
-    // no-op; quality managed below
-  });
-
-  // DRM config
   const playerConfig = {
     manifest: {
       defaultPresentationDelay: 4,
       ignoreTextStreamFailures: true,
-      retryParameters: {
-        maxAttempts: 5, baseDelay: 500, backoffFactor: 2, fuzzFactor: 0.5, timeout: 30000
-      }
+      retryParameters: { maxAttempts: 5, baseDelay: 500, backoffFactor: 2, fuzzFactor: 0.5, timeout: 30000 }
     },
     streaming: {
-      lowLatencyMode: false,
-      bufferingGoal: 10,
-      rebufferingGoal: 1.5,
-      bufferBehind: 25,
-      safeSeekOffset: 4,
-      retryParameters: {
-        maxAttempts: 5, baseDelay: 500, backoffFactor: 2, fuzzFactor: 0.5, timeout: 30000
-      }
+      lowLatencyMode: false, bufferingGoal: 10, rebufferingGoal: 1.5,
+      bufferBehind: 25, safeSeekOffset: 4,
+      retryParameters: { maxAttempts: 5, baseDelay: 500, backoffFactor: 2, fuzzFactor: 0.5, timeout: 30000 }
     },
-    abr: {
-      enabled: true,
-      defaultBandwidthEstimate: 2000000
-    }
+    abr: { enabled: true, defaultBandwidthEstimate: 2000000 }
   };
 
-  // DRM clearkey support
   if (ch.key_id && ch.key) {
-    playerConfig.drm = {
-      clearKeys: {
-        [ch.key_id]: ch.key
-      }
-    };
-  }
-  if (ch.drm_license) {
-    // widevine / playready style
-    playerConfig.drm = Object.assign(playerConfig.drm || {}, {
-      servers: {
-        "com.widevine.alpha": ch.drm_license,
-        "com.microsoft.playready": ch.drm_license
-      }
-    });
+    playerConfig.drm = { clearKeys: { [ch.key_id]: ch.key } };
   }
 
   shakaPlayer.configure(playerConfig);
 
-  // Request filter — cookie, referer, UA
-  const T = shaka.net.NetworkingEngine.RequestType;
   shakaPlayer.getNetworkingEngine().registerRequestFilter((type, req) => {
     if (ch.cookie) req.headers["Cookie"] = ch.cookie;
     req.headers["Referer"] = ch.referer || "https://www.jiotv.com/";
@@ -759,26 +691,19 @@ async function startShaka(ch) {
       "Mozilla/5.0 (Linux; Android 11; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36";
   });
 
-  // Error handling
   shakaPlayer.addEventListener("error", (ev) => {
     const err = ev.detail;
     const code = err && err.code;
     console.log("[shaka error]", code, err);
-    if ([1001, 1002, 1003, 4012, 6006, 6007, 7000, 7001, 7002].indexOf(code) !== -1) {
-      loader.classList.remove("on");
-      showError("Reconnecting...", "Stream issue, dubara try karo");
-    } else {
-      loader.classList.remove("on");
-      showError("Stream error", "Telegram pe backup link dekho");
-    }
+    loader.classList.remove("on");
+    showError("Stream error", "Telegram pe backup link dekho");
   });
 
   try {
-    await shakaPlayer.load(ch.url);
+    await shakaPlayer.load(ch.stream_url || ch.url);
     loader.classList.remove("on");
     video.play().catch(() => {});
 
-    // quality list
     setTimeout(() => {
       try {
         const tracks = shakaPlayer.getVariantTracks();
@@ -801,30 +726,23 @@ async function startShaka(ch) {
   }
 }
 
-/* ══════════════════════════════════════════════
-   IFRAME FALLBACK
-   ══════════════════════════════════════════════ */
+/* ── IFRAME ── */
 function startIframe(ch) {
   video.style.display = "none";
   iframe.style.display = "block";
-  iframe.src = ch.url;
+  iframe.src = ch.stream_url || ch.url;
   setTimeout(() => loader.classList.remove("on"), 1200);
 }
 
-/* ══════════════════════════════════════════════
-   QUALITY CHANGE
-   ══════════════════════════════════════════════ */
+/* ── QUALITY ── */
 qualitySelect.addEventListener("change", (e) => {
   const val = e.target.value;
-  if (hls) {
-    hls.currentLevel = parseInt(val);
-  }
+  if (hls) hls.currentLevel = parseInt(val);
   if (shakaPlayer) {
     const n = parseInt(val);
     const tracks = shakaPlayer.getVariantTracks();
-    if (n === -1) {
-      shakaPlayer.configure({ abr: { enabled: true } });
-    } else {
+    if (n === -1) shakaPlayer.configure({ abr: { enabled: true } });
+    else {
       const target = tracks.find(t => t.height === n);
       if (target) {
         shakaPlayer.configure({ abr: { enabled: false } });
@@ -834,45 +752,28 @@ qualitySelect.addEventListener("change", (e) => {
   }
 });
 
-/* ══════════════════════════════════════════════
-   FULLSCREEN
-   ══════════════════════════════════════════════ */
+/* ── FULLSCREEN ── */
 $("fsBtn").addEventListener("click", () => {
   const el = playerShell;
-  if (document.fullscreenElement) {
-    document.exitFullscreen();
-  } else if (el.requestFullscreen) {
-    el.requestFullscreen();
-  } else if (el.webkitRequestFullscreen) {
-    el.webkitRequestFullscreen();
-  } else if (el.msRequestFullscreen) {
-    el.msRequestFullscreen();
-  }
+  if (document.fullscreenElement) document.exitFullscreen();
+  else if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  else if (el.msRequestFullscreen) el.msRequestFullscreen();
 });
 
-/* ══════════════════════════════════════════════
-   SHARE
-   ══════════════════════════════════════════════ */
+/* ── SHARE ── */
 $("shareBtn").addEventListener("click", async () => {
-  const data = {
-    title: document.title,
-    text: "M.S.D Cricket Hub — live match dekh",
-    url: window.location.href
-  };
+  const data = { title: document.title, text: "M.S.D Cricket Hub — live match dekh", url: window.location.href };
   if (navigator.share) {
     try { await navigator.share(data); return; } catch (e) {}
   }
   try {
     await navigator.clipboard.writeText(window.location.href);
     toast("Link copied!");
-  } catch (e) {
-    prompt("Copy this link:", window.location.href);
-  }
+  } catch (e) { prompt("Copy this link:", window.location.href); }
 });
 
-/* ══════════════════════════════════════════════
-   TOAST
-   ══════════════════════════════════════════════ */
+/* ── TOAST ── */
 const toastEl = $("toast");
 let toastTimer;
 function toast(msg) {
@@ -882,29 +783,20 @@ function toast(msg) {
   toastTimer = setTimeout(() => toastEl.classList.remove("on"), 1800);
 }
 
-/* ══════════════════════════════════════════════
-   TELEGRAM + POPUP
-   ══════════════════════════════════════════════ */
+/* ── TELEGRAM + POPUP ── */
 $("tgBar").href = CONFIG.telegramUrl;
 $("popupJoin").href = CONFIG.telegramUrl;
+setTimeout(() => popup.classList.add("on"), CONFIG.popupDelayMs);
+$("popupJoined").addEventListener("click", () => popup.classList.remove("on"));
 
-setTimeout(() => {
-  popup.classList.add("on");
-}, CONFIG.popupDelayMs);
-
-$("popupJoined").addEventListener("click", () => {
-  popup.classList.remove("on");
-});
-
-/* ══════════════════════════════════════════════
-   INIT
-   ══════════════════════════════════════════════ */
+/* ── INIT ── */
 (async function init() {
   applyFit();
+  video.classList.add("mode-contain");
 
   const id = getIdFromUrl();
   if (!id) {
-    showError("No channel ID in URL", "URL format: ?=hindi");
+    showError("No channel ID in URL", "URL format: ?=H2HD");
     chName.textContent = "—";
     return;
   }
@@ -918,7 +810,7 @@ $("popupJoined").addEventListener("click", () => {
   const ch = data.channels.find(c => c.id === id);
   if (!ch) {
     chName.textContent = "Channel not found";
-    showError("Channel nahi mila: " + id, "channels.json me check karo");
+    showError("Channel nahi mila: " + id, "channel id check karo");
     return;
   }
 
