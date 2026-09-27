@@ -506,16 +506,11 @@ function getIdFromUrl() {
 }
 
 /* ── LOAD JSON (cache-bust) ── */
-async function loadChannels() {
-  try {
-    const res = await fetch(CONFIG.channelsJson + "?t=" + Date.now(), { cache: "no-store" });
-    if (!res.ok) throw new Error("not found");
-    return await res.json();
-  } catch (e) {
-    showError("Channels file load nahi hui", "internet ya source check karo");
-    return null;
-  }
-}
+const res = await fetch(CONFIG.channelsJson + "?t=" + Date.now(), {
+  cache: "no-store",
+  mode: "cors",
+  headers: { "Accept": "application/json" }
+ }
 
 /* ── ERROR ── */
 function showError(msg, sub) {
