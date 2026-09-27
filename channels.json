@@ -1,6 +1,48 @@
-{ 
+{
   "channels": [
-    { 
+    {
+      "id": "english",
+      "name": "Star Sports English",
+      "url": "https://cricxarena.vercel.app/1/?id=English",
+      "type": "iframe"
+    },
+    {
+      "id": "hindi",
+      "name": "Star Sports Hindi",
+      "url": "https://cricxarena.vercel.app/1/?id=Hindi",
+      "type": "iframe"
+    },
+    {
+      "id": "tamil",
+      "name": "Star Sports Tamil",
+      "url": "https://cricxarena.vercel.app/1/?id=Tamil",
+      "type": "iframe"
+    },
+    {
+      "id": "telugu",
+      "name": "Star Sports Telugu",
+      "url": "https://cricxarena.vercel.app/1/?id=Telugu",
+      "type": "iframe"
+    },
+    {
+      "id": "tnt3",
+      "name": "TNT Sports 3 HD",
+      "url": "https://cricxarena.vercel.app/1/?id=TNT3",
+      "type": "iframe"
+    },
+    {
+      "id": "willow-cricbuzz",
+      "name": "Willow Cricbuzz",
+      "url": "https://cricxarena.vercel.app/1/?id=Willow",
+      "type": "iframe"
+    },
+    {
+      "id": "willow-ios",
+      "name": "Willow iOS",
+      "url": "https://cricxarena.vercel.app/1/?id=IOS",
+      "type": "iframe"
+    },
+    {
       "id": "star-sports-2-en",
       "name": "Star Sports 2 English",
       "url": "https://tvsen5.aynaott.com/cXPB2LKkErN9/index.m3u8"
@@ -14,11 +56,6 @@
       "id": "dd-sports-sd",
       "name": "DD Sports SD",
       "url": "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/b17adfe543354fdd8d189b110617cddd/index.m3u8"
-    },
-    {
-      "id": "star-telugu",
-      "name": "Star Sports Telugu",
-      "url": "https://real-vk.proxy.nellaiiptv.com/SDMEDIA/index.m3u8"
     },
     {
       "id": "willow",
@@ -59,50 +96,6 @@
       "id": "tamasha",
       "name": "Tamasha Sports",
       "url": "https://cdn09fsd-n.tamashaweb.com:8087/jazzauth/IndvAfg-svod-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9OS8xMi8yMDI2IDY6MzM6NTcgUE0maGFzaF92YWx1ZT1xdjY1bDZYS2tsU1U1TG11ckdUQmlRPT0mdmFsaWRtaW51dGVzPTYw"
-    },
-    {
-  "channels": [
-    {
-      "id": "english",
-      "name": "Star Sports English",
-      "url": "https://cricxarena.vercel.app/1/?id=English",
-      "type": "iframe"
-    },
-    {
-      "id": "hindi",
-      "name": "Star Sports Hindi",
-      "url": "https://cricxarena.vercel.app/1/?id=Hindi",
-      "type": "iframe"
-    },
-    {
-      "id": "tamil",
-      "name": "Star Sports Tamil",
-      "url": "https://cricxarena.vercel.app/1/?id=Tamil",
-      "type": "iframe"
-    },
-    {
-      "id": "telugu",
-      "name": "Star Sports Telugu",
-      "url": "https://cricxarena.vercel.app/1/?id=Telugu",
-      "type": "iframe"
-    },
-    {
-      "id": "tnt3",
-      "name": "TNT Sports 3 HD",
-      "url": "https://cricxarena.vercel.app/1/?id=TNT3",
-      "type": "iframe"
-    },
-    {
-      "id": "willow",
-      "name": "Willow Cricbuzz",
-      "url": "https://cricxarena.vercel.app/1/?id=Willow",
-      "type": "iframe"
-    },
-    {
-      "id": "willow-ios",
-      "name": "Willow iOS",
-      "url": "https://cricxarena.vercel.app/1/?id=IOS",
-      "type": "iframe"
-    }   
+    }
   ]
-}
+    }
