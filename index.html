@@ -790,15 +790,15 @@ function showError(msg, sub) {
    ══════════════════════════════════════════════ */
 function rawCookie(c) {
   if (!c) return "";
-  if (c.startsWith("__hdnea__=")) return c.slice(11);
-  if (c.startsWith("__hdnea="))   return c.slice(9);
+  if (c.startsWith("__hdnea__=")) return c.slice(10);  // ← 10, na ki 11
+  if (c.startsWith("__hdnea="))   return c.slice(9);   // ← 9
   return c;
 }
 
 function withCookie(u, r) {
   if (!u || !r) return u;
-  if (u.indexOf("__hdnea") !== -1) return u;
-  return u + (u.indexOf("?") !== -1 ? "&" : "?") + "__hdnea=" + r;
+  if (u.indexOf("__hdnea__") !== -1) return u;         // double underscore check
+  return u + (u.indexOf("?") !== -1 ? "&" : "?") + "__hdnea__=" + r;  // double underscore
 }
 
 /* ══════════════════════════════════════════════
