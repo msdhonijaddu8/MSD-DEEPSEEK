@@ -6,8 +6,8 @@
 <meta name="referrer" content="no-referrer" />
 <title>Live</title>
 
-<!-- ⬇️ POPUNDER — Adsterra -->
-<script src="https://pl31567446.profitableratecpmnetwork.com/db/0f/a0/db0fa0fa8ddc946ee7fb59d9786fbe7e.js"></script>
+<!-- POPUNDER -->
+<script src="https://pl31584949.profitableratecpmnetwork.com/9b/50/14/9b50142d5906c1c37e51d588ba7d4a8d.js"></script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/controls.min.css">
 <style>
@@ -35,6 +35,7 @@
     background: #000;
     object-fit: contain;
     z-index: 1;
+    touch-action: manipulation;
   }
 
   /* SHIELD — tap to start */
@@ -54,10 +55,7 @@
     padding: 20px;
   }
 
-  #shield.hide {
-    opacity: 0;
-    pointer-events: none;
-  }
+  #shield.hide { opacity: 0; pointer-events: none; }
 
   .play-btn {
     width: 72px;
@@ -90,27 +88,6 @@
     text-transform: uppercase;
   }
 
-  /* ERROR */
-  #err {
-    position: absolute;
-    inset: 0;
-    background: #000;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: #fff;
-    z-index: 6;
-    padding: 20px;
-    text-align: center;
-  }
-
-  #err.on { display: flex; }
-  #err .ic { font-size: 34px; }
-  #err .ms { font-size: 14px; font-weight: 700; }
-  #err .ss { font-size: 11px; color: #8ba0be; }
-
   /* STATUS TOAST */
   #status {
     position: absolute;
@@ -135,15 +112,8 @@
     white-space: nowrap;
   }
 
-  #status.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-
-  #status.hide {
-    transform: translateX(-50%) translateY(-60px);
-    opacity: 0;
-  }
+  #status.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #status.hide { transform: translateX(-50%) translateY(-60px); opacity: 0; }
 
   .st-dot {
     width: 6px;
@@ -156,6 +126,27 @@
   #status.ok .st-dot { background: #22e6a0; }
   #status.warn .st-dot { background: #fb923c; }
   #status.err .st-dot { background: #f87171; }
+
+  /* ERROR */
+  #err {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #fff;
+    z-index: 6;
+    padding: 20px;
+    text-align: center;
+  }
+
+  #err.on { display: flex; }
+  #err .ic { font-size: 34px; }
+  #err .ms { font-size: 14px; font-weight: 700; }
+  #err .ss { font-size: 11px; color: #8ba0be; }
 </style>
 </head>
 <body>
@@ -181,11 +172,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/shaka-player.ui.min.js"></script>
 
 <script>
-/* ══════════════════════════════════════════════
-   CONFIG
-   ══════════════════════════════════════════════ */
 const CONFIG = {
-  channelsJson: "https://sonujson-v5.pages.dev/Data/sports.json"
+  channelsJson: "https://sonujson-v3.pages.dev/Data/sports.json"
 };
 
 const $ = (id) => document.getElementById(id);
@@ -198,56 +186,35 @@ const statusMsg = $("statusMsg");
 let shakaPlayer = null;
 let currentChannel = null;
 
-/* ══════════════════════════════════════════════
-   STATUS HELPER
-   ══════════════════════════════════════════════ */
 let statusTimer = null;
 function setStatus(msg, type = "ok", dur = 3500) {
   statusMsg.textContent = msg;
   statusEl.className = "show " + type;
   clearTimeout(statusTimer);
   if (dur !== 0) {
-    statusTimer = setTimeout(() => {
-      statusEl.className = "hide " + type;
-    }, dur);
+    statusTimer = setTimeout(() => { statusEl.className = "hide " + type; }, dur);
   }
 }
 
-/* ══════════════════════════════════════════════
-   URL ID
-   ══════════════════════════════════════════════ */
 function getIdFromUrl() {
   const p = new URLSearchParams(window.location.search);
   return p.get("") || p.get("id") || p.get("ch") || null;
 }
 
-/* ══════════════════════════════════════════════
-   ERROR
-   ══════════════════════════════════════════════ */
-function showError() {
-  errEl.classList.add("on");
-  shield.classList.add("hide");
-}
+function showError() { errEl.classList.add("on"); shield.classList.add("hide"); }
 
-/* ══════════════════════════════════════════════
-   COOKIE HELPERS — FIXED
-   ══════════════════════════════════════════════ */
 function rawCookie(c) {
   if (!c) return "";
   if (c.startsWith("__hdnea__=")) return c.slice(10);
   if (c.startsWith("__hdnea="))   return c.slice(9);
   return c;
 }
-
 function withCookie(u, r) {
   if (!u || !r) return u;
   if (u.indexOf("__hdnea__") !== -1) return u;
   return u + (u.indexOf("?") !== -1 ? "&" : "?") + "__hdnea__=" + r;
 }
 
-/* ══════════════════════════════════════════════
-   LOAD JSON
-   ══════════════════════════════════════════════ */
 async function loadChannels() {
   try {
     const res = await fetch(CONFIG.channelsJson + "?t=" + Date.now(), {
@@ -259,27 +226,25 @@ async function loadChannels() {
     if (!data || !data.channels || !data.channels.length) throw new Error("empty");
     console.log("[channels]", data.channels.length);
     return data;
-  } catch (e) {
-    showError();
-    return null;
-  }
+  } catch (e) { showError(); return null; }
 }
 
-/* ══════════════════════════════════════════════
-   SHIELD TAP → START
-   ══════════════════════════════════════════════ */
 shield.addEventListener("click", () => {
   if (!currentChannel) return;
   shield.classList.add("hide");
   startShaka(currentChannel);
 });
 
-/* ══════════════════════════════════════════════
-   SHAKA PLAYER
-   ══════════════════════════════════════════════ */
+function sendToParent(type, payload = {}) {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(Object.assign({ type }, payload), "*");
+    }
+  } catch (e) {}
+}
+
 async function startShaka(ch) {
   if (typeof shaka === "undefined") { showError(); return; }
-
   shaka.polyfill.installAll();
   if (!shaka.Player.isBrowserSupported()) { showError(); return; }
 
@@ -293,17 +258,18 @@ async function startShaka(ch) {
   shakaPlayer = new shaka.Player();
   await shakaPlayer.attach(video);
 
-  /* minimal UI — only play/pause + fullscreen + volume + time */
+  /* ═══ SHAKA UI — sonucdn jaisa ═══ */
   new shaka.ui.Overlay(shakaPlayer, $("player"), video).configure({
     controlPanelElements: [
       "play_pause", "mute", "volume",
       "time_and_duration", "spacer",
-      "picture_in_picture", "fullscreen"
+      "quality", "picture_in_picture", "fullscreen"
     ],
+    overflowMenuButtons: ["quality", "playback_rate", "picture_in_picture"],
     seekBarColors: {
       base: "#828282",
       buffered: "#ffc336",
-      played: "#4fc3ff"
+      played: "#1fc7ff"
     },
     addSeekBar: true,
     fadeDelay: 3
@@ -314,28 +280,68 @@ async function startShaka(ch) {
   const keyId = ch.key_id;
   const key = ch.key;
 
+  /* ═══ DEVICE TIER — sonu ka pattern ═══ */
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const mem = navigator.deviceMemory || 4;
+  const cores = navigator.hardwareConcurrency || 4;
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const net = conn ? (conn.effectiveType || "4g") : "4g";
+
+  let TIER = "high";
+  if (isMobile) {
+    if (mem <= 1.5 || cores <= 2 || net === "slow-2g" || net === "2g") TIER = "low";
+    else if (mem <= 3 || cores <= 4) TIER = "mid";
+  }
+
+  const PROF = {
+    low:  { buf: 4,  reBuf: 1.5, behind: 10, maxH: 480,  maxBw: 1000000, bwEst: 400000 },
+    mid:  { buf: 7,  reBuf: 1.5, behind: 20, maxH: 720,  maxBw: 3000000, bwEst: 1000000 },
+    high: { buf: 10, reBuf: 1.5, behind: 25, maxH: 1080, maxBw: 0,       bwEst: 2000000 }
+  }[TIER];
+
+  const restr = {};
+  if (PROF.maxH < 1080) restr.maxHeight = PROF.maxH;
+  if (PROF.maxBw > 0) restr.maxBandwidth = PROF.maxBw;
+
+  console.log("[tier]", TIER, "· device:", isMobile ? "mobile" : "desktop", "· net:", net);
+
   shakaPlayer.configure({
     drm: { clearKeys: { [keyId]: key } },
     manifest: {
       defaultPresentationDelay: 4,
-      retryParameters: { maxAttempts: 5, baseDelay: 500, backoffFactor: 2, fuzzFactor: 0.5, timeout: 30000 }
+      retryParameters: {
+        maxAttempts: 8,
+        baseDelay: 300,
+        backoffFactor: 1.5,
+        fuzzFactor: 0.5,
+        timeout: 30000
+      }
     },
     streaming: {
       lowLatencyMode: false,
-      bufferingGoal: 10,
-      rebufferingGoal: 1.5,
-      bufferBehind: 25,
+      bufferingGoal: PROF.buf,
+      rebufferingGoal: PROF.reBuf,
+      bufferBehind: PROF.behind,
       safeSeekOffset: 4,
       stallEnabled: true,
       stallThreshold: 1,
       stallSkip: 0.3,
       inaccurateManifestTolerance: 0,
-      retryParameters: { maxAttempts: 5, baseDelay: 500, backoffFactor: 2, fuzzFactor: 0.5, timeout: 30000 }
+      retryParameters: {
+        maxAttempts: 8,
+        baseDelay: 300,
+        backoffFactor: 1.5,
+        fuzzFactor: 0.5,
+        timeout: 30000
+      }
     },
     abr: {
       enabled: true,
-      defaultBandwidthEstimate: 2000000,
-      restrictions: { maxHeight: 1080 }
+      defaultBandwidthEstimate: PROF.bwEst,
+      switchInterval: 4,
+      bandwidthUpgradeTarget: 0.85,
+      bandwidthDowngradeTarget: 0.95,
+      restrictions: restr
     }
   });
 
@@ -357,6 +363,7 @@ async function startShaka(ch) {
     if (recoverable.includes(code)) { setStatus("Buffering…", "warn", 0); return; }
     setStatus("Error " + code, "err", 5000);
     showError();
+    sendToParent("error", { code });
   });
 
   try {
@@ -364,29 +371,78 @@ async function startShaka(ch) {
     await shakaPlayer.load(ch.stream_url);
     video.play().catch(() => { setStatus("Ready — Tap ▶", "ok", 5000); });
     setStatus("Live", "ok", 4000);
+
+    sendToParent("ready", { name: ch.name });
+
+    setTimeout(() => {
+      try {
+        const tracks = shakaPlayer.getVariantTracks();
+        if (tracks && tracks.length) {
+          const heights = [...new Set(tracks.map(t => t.height).filter(Boolean))].sort((a, b) => b - a);
+          sendToParent("qualities", { heights });
+        }
+      } catch (e) {}
+    }, 800);
+
+    video.addEventListener("play", () => sendToParent("state", { paused: false }));
+    video.addEventListener("pause", () => sendToParent("state", { paused: true }));
+
+    video.addEventListener("waiting", () => setStatus("Buffering…", "warn", 0));
+    video.addEventListener("playing", () => setStatus("Live", "ok", 2500));
+
   } catch (e) {
     console.error("[shaka fail]", e);
     setStatus("Load fail", "err", 5000);
     showError();
+    sendToParent("error", { code: "load" });
   }
 }
 
-/* ══════════════════════════════════════════════
-   INIT
-   ══════════════════════════════════════════════ */
+/* Messages from parent (Vercel) */
+window.addEventListener("message", (e) => {
+  const msg = e.data;
+  if (!msg || typeof msg !== "object") return;
+
+  switch (msg.type) {
+    case "play":
+      video.play().catch(() => {});
+      break;
+    case "pause":
+      video.pause();
+      break;
+    case "toggle":
+      if (video.paused) video.play().catch(() => {});
+      else video.pause();
+      break;
+    case "quality":
+      if (!shakaPlayer) return;
+      const n = parseInt(msg.value);
+      const tracks = shakaPlayer.getVariantTracks();
+      if (n === -1) {
+        shakaPlayer.configure({ abr: { enabled: true } });
+      } else {
+        const target = tracks.find(t => t.height === n);
+        if (target) {
+          shakaPlayer.configure({ abr: { enabled: false } });
+          shakaPlayer.selectVariantTrack(target, true);
+        }
+      }
+      break;
+  }
+});
+
+/* INIT */
 (async function init() {
   const id = getIdFromUrl();
   if (!id) { showError(); return; }
-
   const data = await loadChannels();
   if (!data) return;
-
   const ch = data.channels.find(c => c.id === id);
   if (!ch) { showError(); return; }
-
   currentChannel = ch;
   console.log("[ready]", ch.name);
 })();
 </script>
+
 </body>
 </html>
