@@ -4,683 +4,179 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <meta name="referrer" content="no-referrer" />
-<title>M.S.D Cricket Hub</title>
+<title>Live</title>
+
+<!-- ⬇️ POPUNDER — Adsterra -->
 <script src="https://pl31567446.profitableratecpmnetwork.com/db/0f/a0/db0fa0fa8ddc946ee7fb59d9786fbe7e.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Orbitron:wght@700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/controls.min.css">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-  :root {
-    --bg: #05070a;
-    --card: #0e131c;
-    --card-2: #141b27;
-    --line: #1c2533;
-    --line-hot: #2a3a52;
-    --txt: #e8eef7;
-    --txt-dim: #8fa2bd;
-    --txt-dark: #55677f;
-    --blue: #2f80ff;
-    --blue-2: #1e5fd8;
-    --green: #00ff9d;
-    --red: #ff3b5c;
-    --gold: #ffb020;
-    --violet: #a06bff;
-    --sans: "Inter", -apple-system, sans-serif;
-    --brand: "Orbitron", "Inter", sans-serif;
-    --mono: "JetBrains Mono", monospace;
-  }
-
   html, body {
-    background: var(--bg);
-    color: var(--txt);
-    font-family: var(--sans);
-    min-height: 100vh;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
   }
 
-  body::before {
-    content: "";
+  #player {
     position: fixed;
     inset: 0;
-    background:
-      radial-gradient(circle at 20% 0%, rgba(47, 128, 255, 0.08), transparent 45%),
-      radial-gradient(circle at 80% 100%, rgba(0, 255, 157, 0.04), transparent 45%);
-    pointer-events: none;
-    z-index: 0;
+    background: #000;
   }
 
-  .wrap {
-    position: relative;
+  video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    object-fit: contain;
     z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 18px 14px 40px;
-    min-height: 100vh;
+  }
+
+  /* SHIELD — tap to start */
+  #shield {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.85);
     display: flex;
     flex-direction: column;
-  }
-
-  /* ── BRAND ── */
-  .brand-head { text-align: center; padding: 14px 0 6px; position: relative; }
-
-  .brand-title {
-    font-family: var(--brand);
-    font-size: 32px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    line-height: 1.1;
-    color: #2f80ff;
-    text-shadow: 0 0 16px rgba(47,128,255,.8), 0 0 32px rgba(0,255,157,.4), 0 0 60px rgba(47,128,255,.3);
-    text-transform: uppercase;
-    word-break: break-word;
-    animation: brandGlow 3s ease-in-out infinite;
-  }
-
-  @keyframes brandGlow {
-    0%,100% { color:#2f80ff; text-shadow: 0 0 16px rgba(47,128,255,.8), 0 0 32px rgba(0,255,157,.4), 0 0 60px rgba(47,128,255,.3); }
-    50%     { color:#00ff9d; text-shadow: 0 0 20px rgba(0,255,157,.9), 0 0 40px rgba(47,128,255,.6), 0 0 70px rgba(0,255,157,.3); }
-  }
-
-  .brand-sub {
-    margin-top: 8px;
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: var(--txt-dark);
-    text-transform: uppercase;
-  }
-
-  .brand-line {
-    margin-top: 14px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--blue), var(--green), var(--blue), transparent);
-    opacity: 0.5;
-  }
-
-  @media (max-width: 520px) {
-    .brand-title { font-size: 20px; letter-spacing: 1px; }
-    .brand-sub { font-size: 9px; letter-spacing: 3px; }
-  }
-
-  /* ── CHANNEL ── */
-  .channel-head { text-align: center; padding: 18px 0 14px; }
-
-  .ch-live {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 10px; border-radius: 999px;
-    background: rgba(255,59,92,.1);
-    border: 1px solid rgba(255,59,92,.4);
-    color: var(--red);
-    font-weight: 700; letter-spacing: 1.5px; font-size: 10px;
-    margin-bottom: 12px; text-transform: uppercase;
-  }
-
-  .ch-live i {
-    width: 6px; height: 6px;
-    background: var(--red); border-radius: 50%;
-    box-shadow: 0 0 8px var(--red);
-    animation: pulse 1.4s infinite;
-  }
-
-  @keyframes pulse { 0%,100% {opacity:1} 50% {opacity:.3} }
-
-  .ch-name {
-    font-family: var(--brand);
-    font-size: 20px; font-weight: 800;
-    color: var(--blue);
-    letter-spacing: 1px;
-    text-shadow: 0 0 24px rgba(47,128,255,.35), 0 0 48px rgba(47,128,255,.15);
-    line-height: 1.2; word-break: break-word; text-transform: uppercase;
-  }
-
-  @media (max-width: 480px) { .ch-name { font-size: 15px; } }
-
-  /* ── PLAYER ── */
-  .player-section {
-    flex: 1; display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    width: 100%; padding: 8px 0;
-  }
-
-  .player-shell {
-    width: 100%; max-width: 1080px; margin: 0 auto;
-    border-radius: 20px; overflow: hidden;
-    background: #000; border: 1px solid var(--line);
-    box-shadow: 0 20px 60px rgba(0,0,0,.7), 0 0 40px rgba(47,128,255,.08);
-    position: relative;
-  }
-
-  .player-frame {
-    position: relative; background: #000;
-    aspect-ratio: 16 / 10; width: 100%; min-height: 320px;
-  }
-
-  @media (max-width: 700px) {
-    .player-frame { aspect-ratio: 16 / 10; min-height: auto; }
-  }
-
-  .player-frame video,
-  .player-frame iframe {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    border: 0; display: block; background: #000;
-  }
-
-  /* ── SHIELD ── */
-  .shield {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,.82);
-    backdrop-filter: blur(6px);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 14px; z-index: 5; cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    z-index: 5;
+    cursor: pointer;
     transition: opacity .3s;
-    padding: 20px; text-align: center;
+    text-align: center;
+    padding: 20px;
   }
 
-  .shield.hide { opacity: 0; pointer-events: none; }
+  #shield.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
 
   .play-btn {
-    width: 76px; height: 76px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue), var(--blue-2));
-    color: #fff; display: grid; place-items: center;
-    font-size: 28px; padding-left: 6px;
-    box-shadow: 0 0 44px rgba(47,128,255,.35), 0 8px 30px rgba(0,0,0,.5);
+    background: linear-gradient(135deg, #4fc3ff, #1a9be8);
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 26px;
+    padding-left: 6px;
+    box-shadow: 0 0 40px rgba(79,195,255,.5);
     transition: transform .2s;
   }
 
-  .shield:hover .play-btn { transform: scale(1.06); }
+  #shield:hover .play-btn { transform: scale(1.06); }
 
-  .shield-text { font-size: 14px; font-weight: 700; color: #fff; }
-  .shield-sub {
-    font-size: 11px; color: var(--txt-dark);
-    letter-spacing: 1.5px; text-transform: uppercase;
+  .shield-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: .3px;
   }
 
-  /* ── STATUS TOAST (spinner ki jagah) ── */
-  .status-toast {
+  .shield-sub {
+    font-family: ui-monospace, monospace;
+    font-size: 10px;
+    color: #4fc3ff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ERROR */
+  #err {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #fff;
+    z-index: 6;
+    padding: 20px;
+    text-align: center;
+  }
+
+  #err.on { display: flex; }
+  #err .ic { font-size: 34px; }
+  #err .ms { font-size: 14px; font-weight: 700; }
+  #err .ss { font-size: 11px; color: #8ba0be; }
+
+  /* STATUS TOAST */
+  #status {
     position: absolute;
     top: 14px;
     left: 50%;
     transform: translateX(-50%) translateY(-60px);
-    background: rgba(10,10,10,.95);
-    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(0,0,0,.85);
+    border: 1px solid rgba(79,195,255,.3);
     color: #c0c0c0;
-    padding: 7px 14px;
+    padding: 6px 14px;
     border-radius: 24px;
-    font-size: 11.5px;
-    font-weight: 500;
+    font-size: 11px;
+    font-family: ui-monospace, monospace;
+    letter-spacing: 1px;
     z-index: 20;
     display: flex;
     align-items: center;
     gap: 7px;
     transition: all .3s;
-    backdrop-filter: blur(14px);
+    backdrop-filter: blur(10px);
     pointer-events: none;
     white-space: nowrap;
-    max-width: calc(100% - 24px);
-    overflow: hidden;
   }
 
-  .status-toast.show {
+  #status.show {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
 
-  .status-toast.hide {
+  #status.hide {
     transform: translateX(-50%) translateY(-60px);
     opacity: 0;
   }
 
   .st-dot {
-    width: 7px; height: 7px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background: #60a5fa;
+    background: #4fc3ff;
     flex-shrink: 0;
   }
 
-  .status-toast.ok .st-dot { background: #22d3a0; animation: pulse 2s infinite; }
-  .status-toast.warn .st-dot { background: #fb923c; animation: pulse 1s infinite; }
-  .status-toast.err .st-dot { background: #f87171; }
-
-  /* ── FULLSCREEN EXIT BUTTON ── */
-  .fs-exit {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 30;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #fff;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all .2s;
-    backdrop-filter: blur(10px);
-    font-size: 22px;
-    line-height: 1;
-    padding: 0;
-    font-family: inherit;
-  }
-
-  .fs-exit:hover {
-    background: rgba(255, 59, 92, 0.85);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
-  }
-
-  .fs-exit:active {
-    transform: scale(0.95);
-  }
-
-  /* fullscreen me exit button dikhao */
-  .player-shell:fullscreen .fs-exit,
-  .player-shell:-webkit-full-screen .fs-exit {
-    display: flex;
-  }
-
-  /* ── CONTROLS ── */
-  .controls-row {
-    margin-top: 14px;
-    display: flex; gap: 10px;
-    justify-content: center; flex-wrap: wrap;
-    max-width: 1080px; width: 100%;
-    margin-left: auto; margin-right: auto;
-  }
-
-  .ctrl-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 11px 18px;
-    background: var(--card);
-    border: 1px solid var(--line-hot);
-    border-radius: 12px;
-    color: var(--txt);
-    font-size: 13px; font-weight: 700;
-    cursor: pointer; transition: all .2s;
-    font-family: inherit;
-  }
-
-  .ctrl-btn:hover {
-    border-color: var(--blue);
-    background: var(--card-2);
-    box-shadow: 0 0 20px rgba(47,128,255,.2);
-  }
-
-  .ctrl-btn svg {
-    width: 16px; height: 16px;
-    stroke: currentColor; fill: none;
-    stroke-width: 2;
-    stroke-linecap: round; stroke-linejoin: round;
-  }
-
-  .quality-wrap {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 6px 12px;
-    background: var(--card);
-    border: 1px solid var(--line-hot);
-    border-radius: 12px;
-  }
-
-  .quality-wrap label {
-    font-family: var(--mono);
-    font-size: 10px; color: var(--txt-dim);
-    letter-spacing: 1.5px; text-transform: uppercase;
-  }
-
-  .quality-wrap select {
-    background: transparent; border: none;
-    color: var(--txt);
-    font-family: var(--mono);
-    font-size: 12px; font-weight: 700;
-    cursor: pointer; outline: none;
-    padding: 4px 6px;
-  }
-
-  .quality-wrap select option { background: var(--card); color: var(--txt); }
-
-  /* ── TELEGRAM ── */
-  .tg-bar {
-    margin-top: 14px;
-    display: flex; align-items: center; gap: 13px;
-    padding: 13px 18px;
-    background: linear-gradient(135deg, rgba(47,128,255,.12), rgba(30,95,216,.08));
-    border: 1px solid rgba(47,128,255,.35);
-    border-radius: 16px;
-    text-decoration: none; color: var(--txt);
-    transition: all .2s;
-    max-width: 1080px;
-    margin-left: auto; margin-right: auto; width: 100%;
-  }
-
-  .tg-bar:hover {
-    border-color: var(--blue);
-    box-shadow: 0 0 26px rgba(47,128,255,.25);
-    transform: translateY(-1px);
-  }
-
-  .tg-icon {
-    width: 42px; height: 42px;
-    flex-shrink: 0; border-radius: 50%;
-    background: linear-gradient(135deg, #2f80ff, #1e5fd8);
-    display: grid; place-items: center;
-    box-shadow: 0 4px 14px rgba(47,128,255,.4);
-  }
-
-  .tg-icon svg { width: 22px; height: 22px; fill: #fff; }
-
-  .tg-text { flex: 1; }
-  .tg-title { font-size: 14px; font-weight: 800; }
-  .tg-sub { font-size: 11px; color: var(--txt-dim); margin-top: 2px; }
-  .tg-arrow { color: var(--blue); font-size: 18px; font-weight: 700; }
-
-  .share-bar {
-    margin-top: 10px;
-    display: flex; align-items: center;
-    justify-content: center; gap: 10px;
-    padding: 13px 18px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    cursor: pointer; transition: all .2s;
-    color: var(--txt);
-    font-family: inherit;
-    font-size: 13px; font-weight: 700;
-    max-width: 1080px;
-    margin-left: auto; margin-right: auto; width: 100%;
-  }
-
-  .share-bar:hover {
-    border-color: var(--green);
-    box-shadow: 0 0 20px rgba(0,255,157,.15);
-  }
-
-  .share-bar svg {
-    width: 16px; height: 16px;
-    stroke: currentColor; fill: none;
-    stroke-width: 2;
-    stroke-linecap: round; stroke-linejoin: round;
-  }
-
-  /* ── CREDIT ── */
-  .credit-footer {
-    margin-top: 30px;
-    text-align: center;
-    padding: 24px 16px 12px;
-    position: relative;
-  }
-
-  .credit-footer::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 70%; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--violet), var(--gold), var(--violet), transparent);
-    opacity: .6;
-  }
-
-  .credit-label {
-    font-family: var(--mono);
-    font-size: 10px; letter-spacing: 4px;
-    color: var(--txt-dark);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .credit-name {
-    font-family: var(--brand);
-    font-size: 24px; font-weight: 900;
-    letter-spacing: 2px;
-    color: #ffb020;
-    text-transform: uppercase;
-    line-height: 1.2; word-break: break-word;
-    animation: creditGlow 2.4s ease-in-out infinite;
-  }
-
-  @keyframes creditGlow {
-    0%,100% { color:#ffb020; text-shadow: 0 0 12px rgba(255,176,32,.8), 0 0 24px rgba(255,59,92,.6), 0 0 40px rgba(160,107,255,.4); }
-    50%     { color:#ff3b5c; text-shadow: 0 0 18px rgba(255,59,92,.9), 0 0 36px rgba(255,176,32,.7), 0 0 60px rgba(160,107,255,.5); }
-  }
-
-  @media (max-width: 520px) {
-    .credit-name { font-size: 16px; letter-spacing: 1px; }
-    .credit-label { font-size: 9px; letter-spacing: 3px; }
-  }
-
-  /* ── POPUP ── */
-  .popup-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.85);
-    backdrop-filter: blur(6px);
-    z-index: 100;
-    display: none;
-    align-items: center; justify-content: center;
-    padding: 20px;
-  }
-
-  .popup-overlay.on { display: flex; animation: fadeIn .3s; }
-
-  @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
-
-  .popup {
-    background: linear-gradient(160deg, var(--card-2), var(--card));
-    border: 1px solid var(--line-hot);
-    border-radius: 24px;
-    padding: 32px 24px 24px;
-    max-width: 340px; width: 100%;
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 40px rgba(47,128,255,.15);
-    animation: popIn .35s cubic-bezier(.22,1,.36,1);
-  }
-
-  @keyframes popIn {
-    from { opacity:0; transform: scale(.9) translateY(14px); }
-    to   { opacity:1; transform: scale(1) translateY(0); }
-  }
-
-  .popup-tg {
-    width: 72px; height: 72px;
-    margin: 0 auto 18px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2f80ff, #1e5fd8);
-    display: grid; place-items: center;
-    box-shadow: 0 0 36px rgba(47,128,255,.5);
-  }
-
-  .popup-tg svg { width: 36px; height: 36px; fill: #fff; }
-
-  .popup-title {
-    font-size: 19px; font-weight: 800;
-    margin-bottom: 6px;
-  }
-
-  .popup-text {
-    font-size: 13px; color: var(--txt-dim);
-    line-height: 1.5; margin-bottom: 22px;
-  }
-
-  .popup-join {
-    display: block; width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #2f80ff, #1e5fd8);
-    border: none; border-radius: 12px;
-    color: #fff;
-    font-family: inherit;
-    font-size: 14px; font-weight: 800;
-    letter-spacing: .5px;
-    cursor: pointer; text-decoration: none;
-    text-align: center;
-    box-shadow: 0 6px 20px rgba(47,128,255,.4);
-    transition: transform .15s;
-  }
-
-  .popup-join:hover { transform: translateY(-1px); }
-
-  .popup-joined {
-    display: block; width: 100%;
-    padding: 12px; margin-top: 10px;
-    background: transparent;
-    border: 1px solid var(--line-hot);
-    border-radius: 12px;
-    color: var(--txt-dim);
-    font-family: inherit;
-    font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: all .15s;
-  }
-
-  .popup-joined:hover { color: var(--txt); border-color: var(--txt-dim); }
-
-  /* ── FULLSCREEN ── */
-  .player-shell:fullscreen,
-  .player-shell:-webkit-full-screen {
-    border-radius: 0; border: none;
-    max-width: none;
-    width: 100vw; height: 100vh;
-  }
-
-  .player-shell:fullscreen .player-frame,
-  .player-shell:-webkit-full-screen .player-frame {
-    aspect-ratio: unset;
-    height: 100%; min-height: 100%;
-  }
-
-  /* ── ERROR ── */
-  .error-screen {
-    position: absolute; inset: 0;
-    background: var(--card);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 12px; padding: 24px;
-    text-align: center; z-index: 6;
-  }
-
-  .error-screen .icon { font-size: 36px; }
-  .error-screen .msg { font-size: 14px; font-weight: 700; color: var(--txt); }
-  .error-screen .sub { font-size: 12px; color: var(--txt-dim); }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 24px; left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: #fff; color: #000;
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-size: 13px; font-weight: 600;
-    z-index: 9999; opacity: 0;
-    transition: all .35s cubic-bezier(.22,1,.36,1);
-    box-shadow: 0 10px 30px rgba(0,0,0,.5);
-    pointer-events: none;
-  }
-
-  .toast.on { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #status.ok .st-dot { background: #22e6a0; }
+  #status.warn .st-dot { background: #fb923c; }
+  #status.err .st-dot { background: #f87171; }
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<div id="player">
+  <video id="video" playsinline webkit-playsinline preload="none"></video>
 
-  <!-- BRAND -->
-  <div class="brand-head">
-    <div class="brand-title">M.S.D Cricket Hub</div>
-    <div class="brand-sub">Live Cricket · HD Stream</div>
-    <div class="brand-line"></div>
+  <div id="shield">
+    <div class="play-btn">▶</div>
+    <div class="shield-text">Tap to start stream</div>
+    <div class="shield-sub">HD · Live</div>
   </div>
 
-  <!-- CHANNEL -->
-  <div class="channel-head">
-    <div class="ch-live"><i></i>LIVE</div>
-    <div class="ch-name" id="chName">Loading...</div>
-  </div>
+  <div id="status"><span class="st-dot"></span><span id="statusMsg">Ready</span></div>
 
-  <!-- PLAYER -->
-  <div class="player-section">
-    <div class="player-shell" id="playerShell">
-      <div class="player-frame">
-        <div class="shield" id="shield">
-          <div class="play-btn">▶</div>
-          <div class="shield-text">Tap to start stream</div>
-          <div class="shield-sub">HD · Live</div>
-        </div>
-        <div class="status-toast" id="statusToast"><span class="st-dot"></span><span id="statusMsg">Ready</span></div>
-        <video id="video" playsinline crossorigin="anonymous" webkit-playsinline preload="none"></video>
-      </div>
-      <!-- FULLSCREEN EXIT BUTTON -->
-      <button class="fs-exit" id="fsExit" title="Exit Fullscreen">✕</button>
-    </div>
-
-    <div class="controls-row">
-      <button class="ctrl-btn" id="fsBtn">
-        <svg viewBox="0 0 24 24">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-        </svg>
-        Fullscreen
-      </button>
-
-      <div class="quality-wrap">
-        <label>Quality</label>
-        <select id="qualitySelect">
-          <option value="-1">Auto</option>
-        </select>
-      </div>
-
-      <button class="ctrl-btn" id="fitBtn">
-        <svg viewBox="0 0 24 24">
-          <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>
-        </svg>
-        Fit: <span id="fitLabel">Fit</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- TELEGRAM -->
-  <a class="tg-bar" id="tgBar" href="#" target="_blank" rel="noopener">
-    <div class="tg-icon">
-      <svg viewBox="0 0 24 24"><path d="M9.993 15.674l-.398 5.604c.57 0 .817-.245 1.113-.54l2.67-2.557 5.53 4.047c1.014.558 1.734.264 1.987-.939l3.6-16.86.001-.001c.3-1.4-.506-1.95-1.496-1.58L1.27 9.64c-1.37.53-1.35 1.29-.233 1.64l5.68 1.77L19.29 5.73c.59-.39 1.13-.175.69.215"/></svg>
-    </div>
-    <div class="tg-text">
-      <div class="tg-title">Join @MSD_cricketlinks</div>
-      <div class="tg-sub">Daily live match updates · backup links</div>
-    </div>
-    <div class="tg-arrow">→</div>
-  </a>
-
-  <button class="share-bar" id="shareBtn">
-    <svg viewBox="0 0 24 24">
-      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/>
-    </svg>
-    Share this page
-  </button>
-
-  <!-- CREDIT -->
-  <div class="credit-footer">
-    <div class="credit-label">Developed By</div>
-    <div class="credit-name">MSD-KARAN</div>
-  </div>
-
-</div>
-
-<!-- POPUP -->
-<div class="popup-overlay" id="popup">
-  <div class="popup">
-    <div class="popup-tg">
-      <svg viewBox="0 0 24 24"><path d="M9.993 15.674l-.398 5.604c.57 0 .817-.245 1.113-.54l2.67-2.557 5.53 4.047c1.014.558 1.734.264 1.987-.939l3.6-16.86.001-.001c.3-1.4-.506-1.95-1.496-1.58L1.27 9.64c-1.37.53-1.35 1.29-.233 1.64l5.68 1.77L19.29 5.73c.59-.39 1.13-.175.69.215"/></svg>
-    </div>
-    <div class="popup-title">Join Our Telegram</div>
-    <div class="popup-text">Daily live cricket matches, backup links aur instant updates ke liye @MSD_cricketlinks join karo.</div>
-    <a class="popup-join" id="popupJoin" href="https://t.me/MSD_cricketlinks" target="_blank" rel="noopener">JOIN</a>
-    <button class="popup-joined" id="popupJoined">Already Joined</button>
+  <div id="err">
+    <div class="ic">⚠️</div>
+    <div class="ms">Stream unavailable</div>
+    <div class="ss">Try again in a moment</div>
   </div>
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/shaka-player.ui.min.js"></script>
 
@@ -689,57 +185,30 @@
    CONFIG
    ══════════════════════════════════════════════ */
 const CONFIG = {
-  channelsJson: "https://sonujson-v5.pages.dev/Data/sports.json",
-  telegramUrl: "https://t.me/MSD_cricketlinks",
-  popupDelayMs: 3000
+  channelsJson: "https://sonujson-v5.pages.dev/Data/sports.json"
 };
 
 const $ = (id) => document.getElementById(id);
 const video = $("video");
 const shield = $("shield");
-const chName = $("chName");
-const playerShell = $("playerShell");
-const popup = $("popup");
-const qualitySelect = $("qualitySelect");
-const fitBtn = $("fitBtn");
-const fitLabel = $("fitLabel");
-const statusToast = $("statusToast");
+const errEl = $("err");
+const statusEl = $("status");
 const statusMsg = $("statusMsg");
-const fsExit = $("fsExit");
 
 let shakaPlayer = null;
 let currentChannel = null;
 
 /* ══════════════════════════════════════════════
-   FIT MODES
-   ══════════════════════════════════════════════ */
-const FITS = ["contain", "fill", "cover"];
-const FIT_LABELS = { contain: "Fit", fill: "Fill", cover: "Zoom" };
-let fitIdx = 0;
-
-function applyFit() {
-  const m = FITS[fitIdx];
-  video.classList.remove("mode-fill", "mode-cover");
-  if (m === "fill") video.classList.add("mode-fill");
-  if (m === "cover") video.classList.add("mode-cover");
-  fitLabel.textContent = FIT_LABELS[m];
-}
-fitBtn.addEventListener("click", () => {
-  fitIdx = (fitIdx + 1) % FITS.length;
-  applyFit();
-});
-
-/* ══════════════════════════════════════════════
-   STATUS TOAST
+   STATUS HELPER
    ══════════════════════════════════════════════ */
 let statusTimer = null;
 function setStatus(msg, type = "ok", dur = 3500) {
   statusMsg.textContent = msg;
-  statusToast.className = "status-toast show " + type;
+  statusEl.className = "show " + type;
   clearTimeout(statusTimer);
   if (dur !== 0) {
     statusTimer = setTimeout(() => {
-      statusToast.className = "status-toast hide " + type;
+      statusEl.className = "hide " + type;
     }, dur);
   }
 }
@@ -748,8 +217,32 @@ function setStatus(msg, type = "ok", dur = 3500) {
    URL ID
    ══════════════════════════════════════════════ */
 function getIdFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("") || params.get("id") || params.get("ch") || null;
+  const p = new URLSearchParams(window.location.search);
+  return p.get("") || p.get("id") || p.get("ch") || null;
+}
+
+/* ══════════════════════════════════════════════
+   ERROR
+   ══════════════════════════════════════════════ */
+function showError() {
+  errEl.classList.add("on");
+  shield.classList.add("hide");
+}
+
+/* ══════════════════════════════════════════════
+   COOKIE HELPERS — FIXED
+   ══════════════════════════════════════════════ */
+function rawCookie(c) {
+  if (!c) return "";
+  if (c.startsWith("__hdnea__=")) return c.slice(10);
+  if (c.startsWith("__hdnea="))   return c.slice(9);
+  return c;
+}
+
+function withCookie(u, r) {
+  if (!u || !r) return u;
+  if (u.indexOf("__hdnea__") !== -1) return u;
+  return u + (u.indexOf("?") !== -1 ? "&" : "?") + "__hdnea__=" + r;
 }
 
 /* ══════════════════════════════════════════════
@@ -764,46 +257,16 @@ async function loadChannels() {
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
     if (!data || !data.channels || !data.channels.length) throw new Error("empty");
-    console.log("[channels] loaded", data.channels.length, "· updated:", data.last_updated);
+    console.log("[channels]", data.channels.length);
     return data;
   } catch (e) {
-    showError("Channels file load nahi hui", "internet ya source check karo");
+    showError();
     return null;
   }
 }
 
 /* ══════════════════════════════════════════════
-   ERROR
-   ══════════════════════════════════════════════ */
-function showError(msg, sub) {
-  const frame = document.querySelector(".player-frame");
-  const existing = frame.querySelector(".error-screen");
-  if (existing) existing.remove();
-  const el = document.createElement("div");
-  el.className = "error-screen";
-  el.innerHTML = `<div class="icon">⚠️</div><div class="msg">${msg}</div><div class="sub">${sub || ""}</div>`;
-  frame.appendChild(el);
-  shield.classList.add("hide");
-}
-
-/* ══════════════════════════════════════════════
-   COOKIE HELPERS
-   ══════════════════════════════════════════════ */
-function rawCookie(c) {
-  if (!c) return "";
-  if (c.startsWith("__hdnea__=")) return c.slice(10);  // ← 10, na ki 11
-  if (c.startsWith("__hdnea="))   return c.slice(9);   // ← 9
-  return c;
-}
-
-function withCookie(u, r) {
-  if (!u || !r) return u;
-  if (u.indexOf("__hdnea__") !== -1) return u;         // double underscore check
-  return u + (u.indexOf("?") !== -1 ? "&" : "?") + "__hdnea__=" + r;  // double underscore
-}
-
-/* ══════════════════════════════════════════════
-   SHIELD CLICK
+   SHIELD TAP → START
    ══════════════════════════════════════════════ */
 shield.addEventListener("click", () => {
   if (!currentChannel) return;
@@ -815,18 +278,12 @@ shield.addEventListener("click", () => {
    SHAKA PLAYER
    ══════════════════════════════════════════════ */
 async function startShaka(ch) {
-  if (typeof shaka === "undefined") {
-    showError("Shaka player load nahi hua", "internet check karo");
-    return;
-  }
+  if (typeof shaka === "undefined") { showError(); return; }
 
   shaka.polyfill.installAll();
-  if (!shaka.Player.isBrowserSupported()) {
-    showError("Browser support nahi karta", "Chrome / Edge / Safari use karo");
-    return;
-  }
+  if (!shaka.Player.isBrowserSupported()) { showError(); return; }
 
-  setStatus("Stream load ho raha…", "warn", 0);
+  setStatus("Loading…", "warn", 0);
 
   if (shakaPlayer) {
     try { await shakaPlayer.destroy(); } catch (e) {}
@@ -836,16 +293,17 @@ async function startShaka(ch) {
   shakaPlayer = new shaka.Player();
   await shakaPlayer.attach(video);
 
-  new shaka.ui.Overlay(shakaPlayer, playerShell, video).configure({
+  /* minimal UI — only play/pause + fullscreen + volume + time */
+  new shaka.ui.Overlay(shakaPlayer, $("player"), video).configure({
     controlPanelElements: [
       "play_pause", "mute", "volume",
       "time_and_duration", "spacer",
-      "quality", "picture_in_picture", "fullscreen"
+      "picture_in_picture", "fullscreen"
     ],
     seekBarColors: {
       base: "#828282",
       buffered: "#ffc336",
-      played: "#1fc7ff"
+      played: "#4fc3ff"
     },
     addSeekBar: true,
     fadeDelay: 3
@@ -856,41 +314,36 @@ async function startShaka(ch) {
   const keyId = ch.key_id;
   const key = ch.key;
 
-  function buildCfg() {
-    return {
-      drm: { clearKeys: { [keyId]: key } },
-      manifest: {
-        defaultPresentationDelay: 4,
-        retryParameters: { maxAttempts: 5, baseDelay: 500, backoffFactor: 2, fuzzFactor: 0.5, timeout: 30000 }
-      },
-      streaming: {
-        lowLatencyMode: false,
-        bufferingGoal: 10,
-        rebufferingGoal: 1.5,
-        bufferBehind: 25,
-        safeSeekOffset: 4,
-        stallEnabled: true,
-        stallThreshold: 1,
-        stallSkip: 0.3,
-        inaccurateManifestTolerance: 0,
-        retryParameters: { maxAttempts: 5, baseDelay: 500, backoffFactor: 2, fuzzFactor: 0.5, timeout: 30000 }
-      },
-      abr: {
-        enabled: true,
-        defaultBandwidthEstimate: 2000000,
-        restrictions: { maxHeight: 1080 }
-      }
-    };
-  }
-
-  shakaPlayer.configure(buildCfg());
+  shakaPlayer.configure({
+    drm: { clearKeys: { [keyId]: key } },
+    manifest: {
+      defaultPresentationDelay: 4,
+      retryParameters: { maxAttempts: 5, baseDelay: 500, backoffFactor: 2, fuzzFactor: 0.5, timeout: 30000 }
+    },
+    streaming: {
+      lowLatencyMode: false,
+      bufferingGoal: 10,
+      rebufferingGoal: 1.5,
+      bufferBehind: 25,
+      safeSeekOffset: 4,
+      stallEnabled: true,
+      stallThreshold: 1,
+      stallSkip: 0.3,
+      inaccurateManifestTolerance: 0,
+      retryParameters: { maxAttempts: 5, baseDelay: 500, backoffFactor: 2, fuzzFactor: 0.5, timeout: 30000 }
+    },
+    abr: {
+      enabled: true,
+      defaultBandwidthEstimate: 2000000,
+      restrictions: { maxHeight: 1080 }
+    }
+  });
 
   const T = shaka.net.NetworkingEngine.RequestType;
   shakaPlayer.getNetworkingEngine().registerRequestFilter((type, req) => {
     req.headers["Referer"] = "https://www.jiotv.com/";
     req.headers["User-Agent"] = "Mozilla/5.0 (Linux; Android 11; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36";
     if (cookie) req.headers["Cookie"] = cookie;
-
     if (type === T.MANIFEST || type === T.SEGMENT) {
       req.uris = req.uris.map((u) => withCookie(u, raw));
     }
@@ -899,163 +352,41 @@ async function startShaka(ch) {
   shakaPlayer.addEventListener("error", (ev) => {
     const err = ev.detail;
     const code = err && err.code;
-    const cat = err && err.category;
-    console.log("[shaka error]", code, cat, err);
-
+    console.log("[shaka error]", code, err);
     const recoverable = [1001, 1002, 1003, 4012, 6006, 6007, 7000, 7001, 7002];
-    if (recoverable.includes(code)) {
-      setStatus("Buffering…", "warn", 0);
-      return;
-    }
-    setStatus("Stream error (" + code + ")", "err", 5000);
-    showError("Stream error (" + code + ")", "Telegram pe backup link dekho");
+    if (recoverable.includes(code)) { setStatus("Buffering…", "warn", 0); return; }
+    setStatus("Error " + code, "err", 5000);
+    showError();
   });
 
   try {
-    const url = ch.stream_url;
-    console.log("[shaka] loading:", url.slice(0, 100));
-    await shakaPlayer.load(url);
-
-    video.play().catch(() => {
-      setStatus("Ready — Tap ▶", "ok", 5000);
-    });
-
+    console.log("[shaka] loading:", ch.stream_url.slice(0, 100));
+    await shakaPlayer.load(ch.stream_url);
+    video.play().catch(() => { setStatus("Ready — Tap ▶", "ok", 5000); });
     setStatus("Live", "ok", 4000);
-
-    setTimeout(() => {
-      try {
-        const tracks = shakaPlayer.getVariantTracks();
-        if (tracks && tracks.length) {
-          const heights = [...new Set(tracks.map(t => t.height).filter(Boolean))].sort((a, b) => b - a);
-          qualitySelect.innerHTML = '<option value="-1">Auto</option>';
-          heights.forEach(h => {
-            const opt = document.createElement("option");
-            opt.value = h;
-            opt.textContent = h + "p";
-            qualitySelect.appendChild(opt);
-          });
-        }
-      } catch (e) {}
-    }, 800);
-
   } catch (e) {
-    console.error("[shaka load fail]", e);
-    setStatus("Stream load fail hua", "err", 5000);
-    showError("Stream load fail hua", "Telegram pe backup link dekho");
+    console.error("[shaka fail]", e);
+    setStatus("Load fail", "err", 5000);
+    showError();
   }
 }
-
-/* ══════════════════════════════════════════════
-   QUALITY SELECT
-   ══════════════════════════════════════════════ */
-qualitySelect.addEventListener("change", (e) => {
-  if (!shakaPlayer) return;
-  const n = parseInt(e.target.value);
-  const tracks = shakaPlayer.getVariantTracks();
-
-  if (n === -1) {
-    shakaPlayer.configure({ abr: { enabled: true } });
-  } else {
-    const target = tracks.find(t => t.height === n);
-    if (target) {
-      shakaPlayer.configure({ abr: { enabled: false } });
-      shakaPlayer.selectVariantTrack(target, true);
-    }
-  }
-});
-
-/* ══════════════════════════════════════════════
-   FULLSCREEN
-   ══════════════════════════════════════════════ */
-function toggleFullscreen() {
-  const el = playerShell;
-  if (document.fullscreenElement || document.webkitFullscreenElement) {
-    // exit
-    if (document.exitFullscreen) document.exitFullscreen();
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-    else if (document.msExitFullscreen) document.msExitFullscreen();
-  } else {
-    // enter
-    if (el.requestFullscreen) el.requestFullscreen();
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    else if (el.msRequestFullscreen) el.msRequestFullscreen();
-  }
-}
-
-$("fsBtn").addEventListener("click", toggleFullscreen);
-fsExit.addEventListener("click", (e) => {
-  e.stopPropagation();
-  toggleFullscreen();
-});
-
-/* ══════════════════════════════════════════════
-   SHARE
-   ══════════════════════════════════════════════ */
-$("shareBtn").addEventListener("click", async () => {
-  const data = { title: document.title, text: "M.S.D Cricket Hub — live match dekh", url: window.location.href };
-  if (navigator.share) {
-    try { await navigator.share(data); return; } catch (e) {}
-  }
-  try {
-    await navigator.clipboard.writeText(window.location.href);
-    toast("Link copied!");
-  } catch (e) {
-    prompt("Copy this link:", window.location.href);
-  }
-});
-
-/* ══════════════════════════════════════════════
-   TOAST
-   ══════════════════════════════════════════════ */
-const toastEl = $("toast");
-let toastTimer;
-function toast(msg) {
-  toastEl.textContent = msg;
-  toastEl.classList.add("on");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toastEl.classList.remove("on"), 1800);
-}
-
-/* ══════════════════════════════════════════════
-   TELEGRAM + POPUP
-   ══════════════════════════════════════════════ */
-$("tgBar").href = CONFIG.telegramUrl;
-$("popupJoin").href = CONFIG.telegramUrl;
-setTimeout(() => popup.classList.add("on"), CONFIG.popupDelayMs);
-$("popupJoined").addEventListener("click", () => popup.classList.remove("on"));
 
 /* ══════════════════════════════════════════════
    INIT
    ══════════════════════════════════════════════ */
 (async function init() {
-  applyFit();
-
   const id = getIdFromUrl();
-  if (!id) {
-    showError("No channel ID in URL", "URL format: ?=H2HD");
-    chName.textContent = "—";
-    return;
-  }
+  if (!id) { showError(); return; }
 
   const data = await loadChannels();
-  if (!data || !data.channels) {
-    chName.textContent = "—";
-    return;
-  }
+  if (!data) return;
 
   const ch = data.channels.find(c => c.id === id);
-  if (!ch) {
-    chName.textContent = "Channel not found";
-    showError("Channel nahi mila: " + id, "channel id check karo");
-    return;
-  }
+  if (!ch) { showError(); return; }
 
   currentChannel = ch;
-  chName.textContent = ch.name || id;
-  document.title = (ch.name || "Live") + " · M.S.D Cricket Hub";
   console.log("[ready]", ch.name);
 })();
 </script>
-<script src="https://pl31567447.profitableratecpmnetwork.com/49/b2/26/49b2266f8f1c77102c3a54e0636a69ff.js"></script>
 </body>
 </html>
