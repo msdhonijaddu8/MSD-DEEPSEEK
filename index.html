@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>Live</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/controls.min.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  width:100%;height:100%;background:#050a12;overflow:hidden;
+  font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  touch-action:manipulation
+}
+
+#pc{
+  position:fixed;inset:0;background:#000;display:flex;
+  align-items:center;justify-content:center;
+}
+video{width:100%;height:100%;object-fit:contain;background:#000}
+
+/* status pill */
+#status{
+  position:fixed;
+  top:max(14px,env(safe-area-inset-top));
+  left:50%;transform:translateX(-50%) translateY(-60px);
+  z-index:9997;display:flex;align-items:center;gap:8px;
+  padding:8px 16px;
+  background:rgba(5,10,18,.92);
+  border:1px solid rgba(79,195,255,.35);
+  color:#c8d8f0;font-size:12px;font-weight:600;letter-spacing:.3px;
+  border-radius:24px;pointer-events:none;opacity:0;
+  transition:opacity .3s ease,transform .3s ease;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  white-space:nowrap;max-width:calc(100vw - 32px);overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 20px rgba(79,195,255,.15)
+}
+#status.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.st-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+#status.ok .st-dot{background:#4fc3ff;box-shadow:0 0 8px #4fc3ff}
+#status.live .st-dot{background:#22e6a0;box-shadow:0 0 8px #22e6a0;animation:dot-pulse 2s ease-in-out infinite}
+#status.warn .st-dot{background:#fb923c;box-shadow:0 0 8px #fb923c;animation:dot-pulse 1s ease-in-out infinite}
+#status.err .st-dot{background:#f87171;box-shadow:0 0 8px #f87171}
+@keyframes dot-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.55)}}
+
+/* error overlay */
+#err{
+  position:fixed;inset:0;background:#050a12;display:none;
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;color:#e6eefc;z-index:9998;padding:24px;text-align:center;
+}
+#err.on{display:flex}
+#err .ic{font-size:38px}
+#err .ms{font-size:15px;font-weight:700}
+#err .ss{font-size:12px;color:#8ba0be}
+
+/* blue shaka controls */
+.shaka-controls-container button{color:#e6eefc!important}
+.shaka-controls-container .shaka-seek-bar-container .shaka-range-element::-webkit-slider-thumb{background:#4fc3ff!important}
+.shaka-controls-container .shaka-seek-bar-container .shaka-range-element::-moz-range-thumb{background:#4fc3ff!important}
+.shaka-video-container{background:#000!important}
+.shaka-scrim-container{background:linear-gradient(transparent, rgba(5,10,18,.85))!important}
+.shaka-bottom-controls{background:transparent!important}
+.shaka-play-button{
+  background:rgba(79,195,255,.9)!important;
+  color:#04101c!important;
+  box-shadow:0 0 30px rgba(79,195,255,.5)!important;
+}
+.shaka-spinner-container,.shaka-spinner,.shaka-spinner-svg{display:none!important}
+.shaka-overflow-menu,.shaka-settings-menu{
+  background:rgba(10,20,35,.96)!important;
+  border:1px solid rgba(79,195,255,.3)!important;
+  color:#e6eefc!important;
+  backdrop-filter:blur(14px);
+}
+.shaka-overflow-menu button:hover,
+.shaka-settings-menu button:hover{background:rgba(79,195,255,.15)!important}
+.shaka-overflow-menu button,.shaka-settings-menu button{color:#e6eefc!important}
+.shaka-current-time{color:#a8c0e0!important;font-weight:600}
+.shaka-ad-controls{display:none!important}
+</style>
+</head>
+<body>
+
+<div id="pc">
+  <video id="v" playsinline webkit-playsinline autoplay muted
+    preload="auto"
+    x5-video-player-type="h5"
+    x5-video-player-fullscreen="true">
+  </video>
+</div>
+
+<div id="status"><span class="st-dot"></span><span id="statusMsg">Loading...</span></div>
+
+<div id="err">
+  <div class="ic">⚠️</div>
+  <div class="ms">Stream unavailable</div>
+  <div class="ss">Try again in a moment</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/5.2.0/shaka-player.ui.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+var API = "https://sonujson-v5.pages.dev/Data/sports.json";
+
+var $status = document.getElementById("status");
+var $statusMsg = document.getElementById("statusMsg");
+var $pc = document.getElementById("pc");
+var $vid = document.getElementById("v");
+var $err = document.getElementById("err");
+var _stTmr = null;
+
+/* ═══ DEVICE TIER ═══ */
+function getTier(){
+  var mem = navigator.deviceMemory || 4;
+  var cores = navigator.hardwareConcurrency || 4;
+  var mob = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  var net = conn ? (conn.effectiveType || "4g") : "4g";
+  if(!mob) return "high";
+  if(mem <= 1.5 || cores <= 2 || net === "slow-2g" || net === "2g") return "low";
+  if(mem <= 3 || cores <= 4) return "mid";
+  return "high";
+}
+
+var TIER = getTier();
+var PROF = {
+  low:  {buf:4,  reBuf:1.5, behind:10, maxH:480,  maxBw:1000000, bwEst:400000 },
+  mid:  {buf:7,  reBuf:1.5, behind:20, maxH:720,  maxBw:3000000, bwEst:1000000},
+  high: {buf:10, reBuf:1.5, behind:25, maxH:1080, maxBw:0,       bwEst:2000000}
+}[TIER];
+
+/* ═══ STATUS TOAST ═══ */
+function toast(msg, type, dur){
+  $statusMsg.textContent = msg;
+  $status.className = "show " + (type || "ok");
+  if(_stTmr){ clearTimeout(_stTmr); _stTmr = null; }
+  if(dur !== 0){
+    _stTmr = setTimeout(function(){
+      $status.className = $status.className.replace("show","").trim();
+      _stTmr = null;
+    }, dur || 4000);
+  }
+}
+
+/* ═══ HELPERS ═══ */
+function getChId(){
+  var p = new URLSearchParams(location.search);
+  return p.get("id") || p.get("") || "H2HD";
+}
+
+function rawCookie(c){
+  if(!c) return "";
+  if(c.startsWith("__hdnea__=")) return c.slice(10);
+  if(c.startsWith("__hdnea="))   return c.slice(9);
+  return c;
+}
+
+function withCookie(u, r){
+  if(!u || !r) return u;
+  if(u.indexOf("__hdnea__") !== -1) return u;
+  return u + (u.indexOf("?") !== -1 ? "&" : "?") + "__hdnea__=" + r;
+}
+
+/* ═══ CLEAR KEYS — dono format support ═══ */
+function getClearKeys(ch){
+  var keys = {};
+  if(ch.sonuxs && Array.isArray(ch.sonuxs) && ch.sonuxs.length > 0){
+    ch.sonuxs.forEach(function(item){
+      if(typeof item !== "string") return;
+      var p = item.split(":");
+      if(p.length === 2){
+        var kid = p[0].trim();
+        var k = p[1].trim();
+        if(kid && k) keys[kid] = k;
+      }
+    });
+  }
+  if(Object.keys(keys).length === 0 && ch.key_id && ch.key){
+    keys[ch.key_id] = ch.key;
+  }
+  console.log("[keys]", Object.keys(keys).length);
+  return keys;
+}
+
+async function loadData(){
+  var r = await fetch(API, {cache:"no-store", headers:{Accept:"application/json"}});
+  if(!r.ok) throw new Error("HTTP " + r.status);
+  var d = await r.json();
+  if(!d || !Array.isArray(d.channels) || !d.channels.length) throw new Error("empty");
+  return d;
+}
+
+function errMsg(msg){
+  $err.querySelector(".ms").textContent = msg || "Stream unavailable";
+  $err.classList.add("on");
+  toast(msg || "Stream unavailable", "err", 0);
+}
+
+/* ═══ START PLAYER ═══ */
+async function startPlayer(ch){
+  shaka.polyfill.installAll();
+  if(!shaka.Player.isBrowserSupported()){ errMsg("Browser Not Supported"); return; }
+
+  var player = new shaka.Player();
+  await player.attach($vid);
+
+  /* shaka UI with BLUE theme */
+  new shaka.ui.Overlay(player, $pc, $vid).configure({
+    controlPanelElements:[
+      "play_pause","mute","volume",
+      "time_and_duration","spacer",
+      "quality","picture_in_picture","fullscreen"
+    ],
+    overflowMenuButtons:["quality","playback_rate","picture_in_picture"],
+    seekBarColors:{
+      base:    "rgba(79,195,255,.2)",
+      buffered:"rgba(79,195,255,.45)",
+      played:  "#4fc3ff"
+    },
+    fadeDelay: 3
+  });
+
+  var cookie = ch.cookie;
+  var raw = rawCookie(cookie);
+  var url = ch.stream_url;
+  var restrictionsRelaxed = false;
+  var thermalApplied = false;
+  var sessionStart = Date.now();
+
+  var thermalTimer = setInterval(function(){
+    if(Date.now() - sessionStart < 60*60*1000) return;
+    clearInterval(thermalTimer);
+    if(thermalApplied) return;
+    thermalApplied = true;
+    try{
+      player.configure("streaming.bufferBehind", 8);
+      if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+        player.configure("abr.restrictions.maxHeight", Math.min(PROF.maxH, 720));
+      }
+    }catch(_){}
+  }, 60000);
+
+  function buildCfg(currentCh){
+    var effMaxH = (thermalApplied && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent))
+      ? Math.min(PROF.maxH, 720) : PROF.maxH;
+    var restr = {};
+    if(!restrictionsRelaxed){
+      if(effMaxH < 1080) restr.maxHeight = effMaxH;
+      if(PROF.maxBw > 0) restr.maxBandwidth = PROF.maxBw;
+    }
+    return {
+      drm:{ clearKeys: getClearKeys(currentCh) },
+      manifest:{
+        defaultPresentationDelay:4,
+        retryParameters:{maxAttempts:5,baseDelay:500,backoffFactor:2,fuzzFactor:.5,timeout:30000}
+      },
+      streaming:{
+        lowLatencyMode:false,
+        bufferingGoal:PROF.buf,
+        rebufferingGoal:PROF.reBuf,
+        bufferBehind:PROF.behind,
+        safeSeekOffset:4,
+        stallEnabled:true,
+        stallThreshold:1,
+        stallSkip:.3,
+        inaccurateManifestTolerance:0,
+        retryParameters:{maxAttempts:5,baseDelay:500,backoffFactor:2,fuzzFactor:.5,timeout:30000}
+      },
+      abr:{
+        enabled:true,
+        defaultBandwidthEstimate:PROF.bwEst,
+        switchInterval:4,
+        restrictions:restr
+      }
+    };
+  }
+
+  player.configure(buildCfg(ch));
+
+  var T = shaka.net.NetworkingEngine.RequestType;
+  player.getNetworkingEngine().registerRequestFilter(function(type, req){
+    req.headers["Referer"] = "https://www.jiotv.com/";
+    req.headers["User-Agent"] = "Mozilla/5.0 (Linux; Android 11; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36";
+    req.headers["Cookie"] = cookie;
+    if(type === T.MANIFEST || type === T.SEGMENT)
+      req.uris = req.uris.map(function(u){ return withCookie(u, raw); });
+  });
+
+  var refreshing = false, retries = 0, edgeTried = false;
+  var lastTry = 0, started = false, stallTmr = null;
+
+  function goLiveEdge(){
+    if(refreshing) return;
+    try{ player.goToLive(); edgeTried = true; toast("Syncing…","warn",2000); }
+    catch(_){ reload(); }
+  }
+
+  async function reload(){
+    var now = Date.now();
+    if(refreshing || now - lastTry < 1500) return;
+    if(retries >= 5){ toast("Stream Unavailable","err",0); return; }
+    refreshing = true; lastTry = now; retries++;
+    toast("Reconnecting… (" + retries + " / 5)","warn",0);
+    try{
+      var d = await loadData();
+      var fresh = d.channels.find(function(c){ return c.id === ch.id; });
+      if(!fresh) throw new Error("missing");
+      cookie = fresh.cookie; raw = rawCookie(cookie); url = fresh.stream_url;
+      ch = fresh;
+      player.configure(buildCfg(fresh));
+      await player.load(url);
+      $vid.play().catch(function(){});
+      retries = 0; edgeTried = false;
+      toast("Live","live",4000);
+    }catch(_){
+      setTimeout(reload, Math.min(1000 * Math.pow(2, retries - 1), 8000));
+    }finally{ refreshing = false; }
+  }
+
+  var RECOVERABLE = [1001,1002,1003,4012,6006,6007,7000,7001,7002];
+
+  player.addEventListener("error", function(ev){
+    var err = ev.detail;
+    var code = err && err.code;
+    if(code === 4014 && !restrictionsRelaxed){
+      restrictionsRelaxed = true;
+      refreshing = true;
+      player.configure(buildCfg(ch));
+      toast("Adjusting Quality…","warn",2000);
+      player.load(url)
+        .then(function(){ $vid.play().catch(function(){}); toast("Live","live",4000); })
+        .catch(function(){ reload(); })
+        .finally(function(){ refreshing = false; });
+      return;
+    }
+    if(RECOVERABLE.indexOf(code) !== -1){
+      toast("Buffering…","warn",0);
+      setTimeout(function(){ if(!refreshing) reload(); }, 700);
+    } else {
+      toast("Error " + code,"err",6000);
+    }
+  });
+
+  try{
+    toast("Loading Stream…","warn",0);
+    await player.load(url);
+    toast("Ready","ok",3000);
+    $vid.play().catch(function(){
+      /* autoplay blocked — mute ke saath retry */
+      $vid.muted = true;
+      $vid.play().catch(function(){
+        toast("Tap to play","warn",5000);
+      });
+    });
+  }catch(_){
+    toast("Connection Error — Retrying…","warn",0);
+    setTimeout(reload, 1500);
+    return;
+  }
+
+  /* tap = unmute */
+  function unmuteOnce(){
+    $vid.muted = false;
+    $vid.volume = 1;
+  }
+  $pc.addEventListener("pointerdown", unmuteOnce, {capture:true,once:true});
+  $pc.addEventListener("click", unmuteOnce, {capture:true,once:true});
+  $pc.addEventListener("touchstart", unmuteOnce, {capture:true,once:true});
+
+  function onStall(){
+    if(stallTmr) return;
+    toast("Buffering…","warn",0);
+    if(!started || refreshing) return;
+    stallTmr = setTimeout(function(){
+      stallTmr = null;
+      if(!edgeTried) goLiveEdge(); else reload();
+    }, 5000);
+  }
+  function onPlaying(){
+    started = true;
+    if(stallTmr){ clearTimeout(stallTmr); stallTmr = null; }
+    edgeTried = false;
+    if(!refreshing) toast("Live","live",3000);
+  }
+
+  $vid.addEventListener("waiting", onStall);
+  $vid.addEventListener("stalled", onStall);
+  $vid.addEventListener("playing", onPlaying);
+
+  document.addEventListener("visibilitychange", function(){
+    if(!document.hidden){
+      setTimeout(function(){
+        if(started && $vid.paused && !refreshing) $vid.play().catch(function(){});
+      }, 400);
+    }
+  });
+
+  var netConn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if(netConn){
+    netConn.addEventListener("change", function(){
+      if(!player || restrictionsRelaxed) return;
+      var t = netConn.effectiveType || "4g";
+      var h = t === "slow-2g" || t === "2g" ? 240 : t === "3g" ? 480 : PROF.maxH;
+      try{ player.configure("abr.restrictions.maxHeight", h); }catch(_){}
+    });
+  }
+}
+
+/* ═══ MAIN ═══ */
+async function main(){
+  var id = getChId(), data;
+  try{
+    toast("Loading...","warn",0);
+    data = await loadData();
+  }catch(_){
+    errMsg("Connection Error");
+    return;
+  }
+  var ch = data.channels.find(function(c){ return c.id === id; });
+  if(!ch){ errMsg("Channel Not Found: " + id); return; }
+  document.title = ch.name;
+  console.log("[channel]", ch.name);
+  await startPlayer(ch);
+}
+
+document.addEventListener("DOMContentLoaded", main);
+})();
+</script>
+</body>
+</html>
